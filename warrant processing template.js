@@ -1,0 +1,534 @@
+/*
+This function contains a dialog which is used to gather the information 
+used when processing warrants for entry. Specifically used for recording 
+information on the CORE record printout. 
+
+It works in conjunction with the addtoolbar button function below.
+
+it must be placed in as a folder level script in the users folder found at the below path
+
+
+*/
+
+
+
+
+
+
+function CreateWarrantDialog()
+{
+
+var WrntDlg =
+{
+	cDl:"",
+	cPntrv:"",
+	cDd1:"",
+	cDd2:"",
+	cDd3:"",
+	cDdr1:"",
+	cDdr2:"",
+	cDdr3:"",
+	cDdcase1:"",
+	cDdcase2:"",
+	cDdcase3:"",
+	cFtad:"",
+	cFta1:"",
+	
+	initialize: function(dialog)
+	{
+		
+    
+		
+		
+		// set a default value for radio groups
+		dialog.load(
+		{
+			"dl01": true,
+			"pnt1": true,
+			"rad7": true
+		});
+		
+		this.hasfta = false;
+		// disable the fta case# field
+		dialog.enable(
+		{
+			"ftad" : this.hasfta,
+			"fta1" : this.hasfta	
+		});
+	},
+
+
+rad7: function (dialog) {
+			// Process the fta, if the user selects yes enable the fta case# field
+			this.hasfta = !this.hasfta;
+			dialog.enable({
+				"ftad" : this.hasfta,
+				"fta1" : this.hasfta,
+			});
+		},	
+ 
+ 
+ 	
+	commit:function(dialog)
+		{ // called when OK pressed
+			var results = dialog.store();
+			// try to assign the variables to access outside the dialog
+			//this.cdl = results.
+			//this.pntrv = results. 
+			
+			this.cDl = this.getdl(results);
+			this.cPntrv = this.getpntrv(results);
+			this.cDd1 = results.ddt1;
+			this.cDd2 = results.ddt2;
+			this.cDd3 = results.ddt3;
+			this.cDdr1 = results.ddr1;
+			this.cDdr2 = results.ddr2;
+			this.cDdr3 = results.ddr3;
+			this.cDdcase1 = results.cse1;
+			this.cDdcase2 = results.cse2;
+			this.cDdcase3 = results.cse3;
+			this.cFtad = results.ftad;
+			this.cFta1 = results.fta1;
+			
+			// check to see if variables are stored 
+			//console.println("DD1 is " + results.ddt1 + " and the diary date remarks are " + results["ddr1"] );
+			//console.println("DD2 is " + results.ddt2 + " and the diary date remarks are " + results["ddr2"] );
+			//console.println("DD3 is " + results.ddt3 + " and the diary date remarks are " + results["ddr3"] );
+		
+		},
+		
+		
+		getdl: function (results) {
+			for ( var i=1; i<=3; i++) {
+				if ( results["dl0"+i] ) {
+					switch (i) {
+						case 1:
+							var cDl = "NO DL";
+							break;
+						case 2:
+							var cDl = "ADD DL";
+							break;
+						case 3:
+							var cDl = "DL VALID";
+					}
+				}
+			};
+			return cDl;
+		},
+		
+		
+				getpntrv: function (results) {
+			for ( var i=1; i<=3; i++) {
+				if ( results["pnt"+i] ) {
+					switch (i) {
+						case 1:
+							var cPntrv = "NO PNTRV";
+							break;
+						case 2:
+							var cPntrv = "ADD PNTRV";
+							break;
+						case 3:
+							var cPntrv = "PNTRV VALID";
+					}
+				}
+			};
+			return cPntrv;
+		},
+		
+// build my dialog
+ 
+ description:
+ {
+		name:"Warrant Dialog Box",
+		elements:[{type:"view",elements:[
+		{
+			type:"view",
+			//item_id:"Vew1",
+			width:848,
+			height:276,
+			elements:[
+				{
+					type:"view",
+					//item_id:"Vew4",
+					width:830,
+					height:262,
+					align_children:"align_top",
+					elements:[
+						{
+							type:"view",
+							//item_id:"Vew2",
+							width:167,
+							height:243,
+							elements:[
+								{
+									type:"cluster",
+									//item_id:"Cls2",
+									name:"DL",
+									width:153,
+									height:97,
+									align_children:"align_left",
+									elements:[
+										{
+											type:"radio",
+											item_id:"dl01",
+											group_id:"dlrd",
+											name:"NO DL",
+										},
+										{
+											type:"radio",
+											item_id:"dl02",
+											group_id:"dlrd",
+											name:"ADD DL",
+										},
+										{
+											type:"radio",
+											item_id:"dl03",
+											group_id:"dlrd",
+											name:"VALID DL",
+										},
+									],
+								},
+								{
+									type:"cluster",
+									//item_id:"Cls3",
+									name:"PNTRV",
+									width:153,
+									height:97,
+									elements:[
+										{
+											type:"radio",
+											item_id:"pnt1",
+											group_id:"pvrd",
+											name:"NO PNTRV",
+										},
+										{
+											type:"radio",
+											item_id:"pnt2",
+											group_id:"pvrd",
+											name:"ADD PNTRV",
+										},
+										{
+											type:"radio",
+											item_id:"pnt3",
+											group_id:"pvrd",
+											name:"PNTRV VALID",
+										},
+									],
+								},
+							],
+						},
+						{
+							type:"cluster",
+							//item_id:"Cls5",
+							name:"DIARY DATES",
+							width:600,
+							height:206,
+							elements:[
+								{
+									type:"view",
+									//item_id:"Vew5",
+									width:464,
+									align_children:"align_row",
+									elements:[
+										{
+											type:"static_text",
+											//item_id:"Sta2",
+											name:"DD1",
+											bold:true,
+										},
+										{
+											type:"edit_text",
+											item_id:"ddt1",
+											width:80,
+											height:20,
+										},
+										{
+											type:"static_text",
+											//item_id:"Sta3",
+											name:"DDR1",
+											bold:true,
+										},
+										{
+											type:"edit_text",
+											item_id:"ddr1",
+											width:200,
+											height:20,
+										},
+										{
+											type:"static_text",
+											//item_id:"Sta4",
+											name:"case#",
+											bold:true,
+										},
+										{
+											type:"edit_text",
+											item_id:"cse1",
+											width:200,
+											height:20,
+										},
+									],
+								},
+								{
+									type:"view",
+									//item_id:"Vew6",
+									width:500,
+									align_children:"align_row",
+									elements:[
+										{
+											type:"static_text",
+											//item_id:"Sta5",
+											name:"DD2",
+											bold:true,
+										},
+										{
+											type:"edit_text",
+											item_id:"ddt2",
+											width:80,
+											height:20,
+										},
+										{
+											type:"static_text",
+											//item_id:"Sta6",
+											name:"DDR2",
+											height:20,
+										},
+										{
+											type:"edit_text",
+											item_id:"ddr2",
+											width:200,
+											height:20,
+										},
+										{
+											type:"static_text",
+											//item_id:"Sta7",
+											name:"case#",
+											bold:true,
+										},
+										{
+											type:"edit_text",
+											item_id:"cse2",
+											width:200,
+											height:20,
+										},
+									],
+								},
+								{
+									type:"view",
+									//item_id:"Vew7",
+									width:500,
+									align_children:"align_row",
+									elements:[
+										{
+											type:"static_text",
+											//item_id:"Sta8",
+											name:"DD3",
+											bold:true,
+										},
+										{
+											type:"edit_text",
+											item_id:"ddt3",
+											width:80,
+											height:20,
+										},
+										{
+											type:"static_text",
+											//item_id:"Sta9",
+											name:"DDR3",
+											bold:true,
+										},
+										{
+											type:"edit_text",
+											item_id:"ddr3",
+											width:200,
+											height:20,
+										},
+										{
+											type:"static_text",
+											//item_id:"St10",
+											name:"case#",
+											bold:true,
+										},
+										{
+											type:"edit_text",
+											item_id:"cse3",
+											width:200,
+											height:20,
+										},
+									],
+								},
+								{
+									type:"view",
+									//item_id:"Vew8",
+									width:626,
+									height:94,
+									elements:[
+										{
+											type:"cluster",
+											//item_id:"Cls6",
+											name:"ADD FTA?",
+											align_children:"align_row",
+											elements:[
+												{
+													type:"view",
+													//item_id:"Vew9",
+													width:48,
+													height:52,
+													elements:[
+														{
+															type:"radio",
+															item_id:"rad7",
+															group_id:"ddrd",
+															name:"NO",
+															font:"dialog",
+															bold:true,
+														},
+														{
+															type:"radio",
+															item_id:"rad7",
+															group_id:"ddrd",
+															name:"YES",
+															font:"dialog",
+															bold:true,
+														},
+													],
+												},
+												{
+													type:"view",
+													//item_id:"Ve11",
+													width:213,
+													height:50,
+													align_children:"align_row",
+													elements:[
+														{
+															type:"static_text",
+															//item_id:"St11",
+															name:"FTA Date",
+															font:"dialog",
+															bold:true,
+														},
+														{
+															type:"edit_text",
+															item_id:"ftad",
+															width:100,
+															height:20,
+														},
+														{
+															type:"static_text",
+															//item_id:"St12",
+															name:"FTA case#",
+															font:"dialog",
+															bold:true,
+														},
+														{
+															type:"edit_text",
+															item_id:"fta1",
+															width:100,
+															height:20,
+														},
+													],
+												},
+												{
+													type:"gap",
+													//item_id:"Gap2",
+													width:20,
+													height:20,
+												},
+												{
+													type:"ok_cancel",
+												},
+											],
+										},
+									],
+								},
+							],
+						},
+					],
+				},
+			],
+		},
+	]}]
+	}
+}; 
+
+//app.execDialog(WrntDlg);
+//line above used for testing.
+//==================================================================
+// the lines in this group are there just to make sure the variables were assigned. 
+// WrntDlg.cDd1;
+// WrntDlg.cDd2;
+// WrntDlg.cDd3;
+// WrntDlg.cDdr1;
+// WrntDlg.cDdr2;
+// WrntDlg.cDdr3;
+// WrntDlg.cDdcase1;
+// WrntDlg.cDdcase2;
+// WrntDlg.cDdcase3;
+//===================================================================
+
+if ("ok" == app.execDialog(WrntDlg))
+{
+
+var mytext3 = "2013-08-25"
+var mytext4 = "AGED WARRANT REVIEW"
+var mytext5;
+
+var spans = new Array();
+spans[0] = new Object();
+spans[0].textStyle = "bold";
+spans[0].textColor = color.blue;
+spans[0].textSize = 9;
+spans[0].fontFamily = ["Arial Black", "monospace" ];
+spans[0].text = WrntDlg.cDl + "\r" + WrntDlg.cPntrv;
+
+	
+if(WrntDlg.cDd1 != ""){
+spans[1] = new Object();
+spans[1].textStyle = "bold";
+spans[1].textColor = color.blue;
+spans[1].textSize = 9;
+spans[1].fontFamily = ["Arial Black", "monospace" ];
+spans[1].text = "\r\rDD1:   " + WrntDlg.cDd1 + "\r" + WrntDlg.cDdr1 + " " + WrntDlg.cDdcase1; 
+}
+
+if(WrntDlg.cDd2 != ""){
+spans[2] = new Object();
+spans[2].textStyle = "bold";
+spans[2].textColor = color.blue;
+spans[2].textSize = 9;
+spans[2].fontFamily = ["Arial Black", "monospace" ];
+spans[2].text = "\r\rDD2:   " + WrntDlg.cDd2 + "\r" + WrntDlg.cDdr2 + " " + WrntDlg.cDdcase2;
+}
+
+if(WrntDlg.cDd3 != ""){
+spans[3] = new Object();
+spans[3].textStyle = "bold";
+spans[3].textColor = color.blue;
+spans[3].textSize = 9;
+spans[3].fontFamily = ["Arial Black", "monospace" ];
+spans[3].text = "\r\rDD3:   " + WrntDlg.cDd3 + "\r" + WrntDlg.cDdr3 + " " + WrntDlg.cDdcase3;
+}
+
+if(WrntDlg.cFtad != ""){		//testing to see if the if statement works
+spans[4] = new Object();
+spans[4].textStyle = "bold";
+spans[4].textColor = color.blue;
+spans[4].textSize = 9;
+spans[4].fontFamily = ["Arial Black", "monospace" ];
+spans[4].text = "\r\rADD FTA\r"+WrntDlg.cFtad+"\r"+WrntDlg.cFta1+"\rLEAVE ENDORSED BLANK";
+
+}
+// Now create the annot with spans as it's richContents
+var annot = this.addAnnot({
+page: 0,
+type: "FreeText",
+//rect: [350, 300, 600, 700], 
+//rect: [340, 400, 600, 700], // 340 & 600 are good
+rect: [340, 500, 600, 700], //this one looks like the winner.
+richContents: spans
+});
+};
+
+
+};
+
+app.addToolButton({ cName: "DL & DD",cExec: "CreateWarrantDialog()", cTooltext: "Push Me!", cEnable: true, nPos: 0,cLabel: "DL,PNTRV and Diary dates"});
